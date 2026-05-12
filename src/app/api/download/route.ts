@@ -1,67 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
 import JSZip from "jszip";
 import { ResolvedImage } from "@/lib/extractors";
+import puppeteer from "puppeteer";
+
+async function fetchImagesWithBrowser(
+  images: ResolvedImage[]
+): Promise<({ filename: string; buffer: ArrayBuffer } | null)[]> {
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+
+  const results: ({ filename: string; buffer: ArrayBuffer } | null)[] = new Array(images.length).fill(null);
+
+  try {
+    const page = await browser.newPage();
+    await page.goto("https://www.smugmug.com", { waitUntil: "domcontentloaded", timeout: 15000 });
+
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+      try {
+        const response = await page.goto(img.directUrl, { waitUntil: "networkidle0", timeout: 15000 });
+
+        if (!response || !response.ok()) {
+          console.warn(`[download] Puppeteer: ${img.directUrl} → ${response?.status()}`);
+          continue;
+        }
+
+        const contentType = response.headers()["content-type"] ?? "";
+        if (!contentType.startsWith("image/")) {
+          console.warn(`[download] Not an image: ${contentType}`);
+          continue;
+        }
+
+        const nodeBuffer = await response.buffer();
+        const arrayBuffer = nodeBuffer.buffer.slice(
+          nodeBuffer.byteOffset,
+          nodeBuffer.byteOffset + nodeBuffer.byteLength
+        ) as ArrayBuffer;
+
+        const ext = contentType.split("/")[1]?.split(";")[0] ?? "jpg";
+        const filename = `img${i + 1}.${ext}`;
+
+        results[i] = { filename, buffer: arrayBuffer };
+        console.log(`[download] ✓ ${filename}`);
+      } catch (err) {
+        console.warn(`[download] Failed: ${img.directUrl}`, err);
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+
+  return results;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { images } = body as { images: ResolvedImage[] };
+    const { images } = (await req.json()) as { images: ResolvedImage[] };
 
     if (!Array.isArray(images) || images.length === 0) {
       return NextResponse.json({ error: "No images provided" }, { status: 400 });
     }
 
-    const zip = new JSZip();
-    const folder = zip.folder("zipdrift-images")!;
+    const fetched = await fetchImagesWithBrowser(images);
 
-    // Fetch all images in parallel, skip ones that fail
-    const results = await Promise.allSettled(
-      images.map(async (img) => {
-      const res = await fetch(img.directUrl, {
-  headers: {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Referer": new URL(img.originalUrl).origin + "/",
-    "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-  },
-});
+    const successCount = fetched.filter(Boolean).length;
 
-console.log(`[download] ${img.directUrl} → status ${res.status} | content-type: ${res.headers.get("content-type")}`);
-
-if (!res.ok) throw new Error(`Fetch failed for ${img.directUrl}: ${res.status}`);
-
-        const contentType = res.headers.get("content-type") ?? "";
-        if (!contentType.startsWith("image/")) {
-          throw new Error(`URL did not return an image (got ${contentType})`);
-        }
-
-        const buffer = await res.arrayBuffer();
-        return { filename: img.filename, buffer };
-      })
-    );
-
-    // Track what succeeded vs failed
-    const fetchFailed: string[] = [];
-
-    results.forEach((result, i) => {
-      if (result.status === "fulfilled") {
-        const { filename, buffer } = result.value;
-        // Deduplicate filenames if needed
-        const safeFilename = filename || `image_${String(i + 1).padStart(3, "0")}.jpg`;
-        folder.file(safeFilename, buffer);
-      } else {
-        fetchFailed.push(images[i].originalUrl);
-        console.warn("[/api/download] Failed to fetch:", images[i].directUrl, result.reason);
-      }
-    });
-
-    const successCount = results.filter((r) => r.status === "fulfilled").length;
     if (successCount === 0) {
       return NextResponse.json(
         { error: "None of the images could be fetched. They may be private or unsupported." },
         { status: 422 }
       );
     }
+
+    const zip = new JSZip();
+    const folder = zip.folder("zipdrift-images")!;
+
+    fetched.forEach((item) => {
+      if (item) folder.file(item.filename, item.buffer);
+    });
 
     const zipBuffer = await zip.generateAsync({
       type: "arraybuffer",
@@ -75,9 +93,7 @@ if (!res.ok) throw new Error(`Fetch failed for ${img.directUrl}: ${res.status}`)
         "Content-Type": "application/zip",
         "Content-Disposition": `attachment; filename="zipdrift-images.zip"`,
         "Content-Length": String(zipBuffer.byteLength),
-        // Pass back how many succeeded so the client can reflect it
         "X-Success-Count": String(successCount),
-        "X-Failed-Count": String(fetchFailed.length),
       },
     });
   } catch (err) {

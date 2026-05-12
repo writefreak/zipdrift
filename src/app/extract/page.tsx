@@ -222,7 +222,7 @@ export default function StartExtracting(): JSX.Element {
 ].join("\n")}
               className="w-full bg-transparent px-5 py-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none leading-relaxed font-mono"
             />
-<p className="px-5 pb-3 text-xs text-gray-600">
+<p className="px-5 pb-3 text-xs text-white/80">
   Tip: right-click an image and choose <span className="text-gray-400">Copy image address</span> for best results.
 </p>
             {/* Bottom bar */}
