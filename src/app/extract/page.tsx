@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { ResolvedImage } from "@/lib/extractors";
 import { useState, useRef, ChangeEvent, DragEvent, ClipboardEvent, JSX } from "react";
 
 interface Step {
@@ -16,14 +16,17 @@ const STEPS: Step[] = [
   { n: "03", title: "Download your zip", desc: "Everything packaged cleanly in one file, ready in moments." },
 ];
 
+type Stage = "idle" | "extracting" | "ready" | "downloading" | "error";
+
 export default function StartExtracting(): JSX.Element {
   const [urls, setUrls] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [urlCount, setUrlCount] = useState<number>(0);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [stage, setStage] = useState<Stage>("idle");
+  const [resolvedImages, setResolvedImages] = useState<ResolvedImage[]>([]);
+  const [successCount, setSuccessCount] = useState<number>(0);
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const router = useRouter();
 
   const countLines = (value: string): number =>
     value.split("\n").filter((l: string) => l.trim().length > 0).length;
@@ -57,26 +60,122 @@ export default function StartExtracting(): JSX.Element {
     setUrlCount(countLines(next));
   };
 
-  const handleSubmit = (): void => {
+  const handleSubmit = async (): Promise<void> => {
     if (!urls.trim()) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setSubmitted(true);
-    }, 2200);
+
+    const rawUrls = urls
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    console.log("[ZipDrift] Submitting URLs:", rawUrls);
+    setStage("extracting");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urls: rawUrls }),
+      });
+
+      console.log("[ZipDrift] /api/extract response status:", res.status);
+      console.log("[ZipDrift] /api/extract content-type:", res.headers.get("content-type"));
+
+      const rawText = await res.text();
+      console.log("[ZipDrift] /api/extract raw response:", rawText);
+
+      let data: { resolved?: ResolvedImage[]; error?: string };
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr) {
+        console.error("[ZipDrift] Failed to parse /api/extract response as JSON:", parseErr);
+        throw new Error("Something went wrong on our end. Please try again.");
+      }
+
+      if (!res.ok) {
+        console.error("[ZipDrift] /api/extract error payload:", data);
+        throw new Error("Something went wrong while extracting. Please try again.");
+      }
+
+      const resolved: ResolvedImage[] = data.resolved ?? [];
+      console.log("[ZipDrift] Resolved images:", resolved);
+
+      if (resolved.length === 0) {
+        throw new Error("We couldn't find any images at those URLs. Make sure they're public.");
+      }
+
+      setResolvedImages(resolved);
+      setUrlCount(resolved.length);
+      setStage("ready");
+    } catch (err) {
+      console.error("[ZipDrift] handleSubmit error:", err);
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setStage("error");
+    }
+  };
+
+  const handleDownload = async (): Promise<void> => {
+    if (resolvedImages.length === 0) return;
+    setStage("downloading");
+
+    console.log("[ZipDrift] Starting download with images:", resolvedImages);
+
+    try {
+      const res = await fetch("/api/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images: resolvedImages }),
+      });
+
+      console.log("[ZipDrift] /api/download response status:", res.status);
+      console.log("[ZipDrift] /api/download content-type:", res.headers.get("content-type"));
+
+      if (!res.ok) {
+        const rawText = await res.text();
+        console.error("[ZipDrift] /api/download error raw response:", rawText);
+        throw new Error("We couldn't package your images. Please try again.");
+      }
+
+      const succeeded = Number(res.headers.get("X-Success-Count") ?? resolvedImages.length);
+      console.log("[ZipDrift] Succeeded image count:", succeeded);
+      setSuccessCount(succeeded);
+
+      const blob = await res.blob();
+      console.log("[ZipDrift] Zip blob size:", blob.size, "bytes");
+
+      const blobUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = "zipdrift-images.zip";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(blobUrl);
+
+      setStage("ready");
+    } catch (err) {
+      console.error("[ZipDrift] handleDownload error:", err);
+      setErrorMsg(err instanceof Error ? err.message : "Download failed. Please try again.");
+      setStage("error");
+    }
   };
 
   const handleClear = (): void => {
     setUrls("");
     setUrlCount(0);
-    setSubmitted(false);
+    setStage("idle");
+    setResolvedImages([]);
+    setSuccessCount(0);
+    setErrorMsg("");
   };
 
+  const isLoading = stage === "extracting";
+  const submitted = stage === "ready" || stage === "downloading";
+
   return (
-   
     <div className="relative min-h-screen bg-black text-white font-nunito antialiased overflow-hidden">
 
-     
       <div className="absolute inset-x-0 top-0 h-105 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,#6b21c8_0%,#3b0764_35%,#0d0014_65%,transparent_100%)]" />
 
       <div className="relative z-10 max-w-3xl mx-auto px-6 md:pt-24">
@@ -89,6 +188,13 @@ export default function StartExtracting(): JSX.Element {
             <span className="text-[#984cd6]">We'll handle the rest.</span>
           </h1>
         </div>
+
+        {/* ERROR STATE */}
+        {stage === "error" && (
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/8 px-5 py-4 text-sm text-red-300">
+            {errorMsg}
+          </div>
+        )}
 
         {/* INPUT CARD */}
         {!submitted ? (
@@ -103,8 +209,6 @@ export default function StartExtracting(): JSX.Element {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-           
-
             <textarea
               ref={textareaRef}
               value={urls}
@@ -112,13 +216,15 @@ export default function StartExtracting(): JSX.Element {
               onPaste={handlePaste}
               rows={4}
               placeholder={[
-                "https://example.com/product/sneakers",
-                "https://dribbble.com/shots/12345678",
-                "https://unsplash.com/photos/abc123",
-              ].join("\n")}
+  "https://images.unsplash.com/photo-abc123...",
+  "https://cdn.dribbble.com/users/123/screenshots/...",
+  "https://drive.google.com/file/d/ABC123/view",
+].join("\n")}
               className="w-full bg-transparent px-5 py-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none leading-relaxed font-mono"
             />
-
+<p className="px-5 pb-3 text-xs text-gray-600">
+  Tip: right-click an image and choose <span className="text-gray-400">Copy image address</span> for best results.
+</p>
             {/* Bottom bar */}
             <div className="flex items-center justify-between px-5 py-4 border-t border-white/5 bg-black/20">
               <button
@@ -131,7 +237,7 @@ export default function StartExtracting(): JSX.Element {
 
               <Button
                 disabled={!urls.trim() || isLoading}
-                onClick={() => router.push("/extract")}
+                onClick={handleSubmit}
                 className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-[#984cd6] font-medium hover:scale-105 hover:bg-[#984cd6] active:scale-95 transition-all duration-150 shadow-[0_0_16px_6px_#984cd6aa]"
               >
                 {isLoading ? (
@@ -162,11 +268,15 @@ export default function StartExtracting(): JSX.Element {
             </div>
             <h2 className="text-2xl font-bold mb-2">Your zip is ready!</h2>
             <p className="text-gray-400 text-sm mb-8">
-              {urlCount} {urlCount === 1 ? "URL" : "URLs"} processed — all images packaged cleanly.
+              {urlCount} {urlCount === 1 ? "image" : "images"} resolved — all packaged cleanly.
             </p>
             <div className="flex gap-3 justify-center flex-wrap">
-              <button className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-linear-to-br from-[#9333ea] to-[#7c3aed] hover:opacity-90 active:scale-95 transition-all">
-                Download zip
+              <button
+                onClick={handleDownload}
+                disabled={stage === "downloading"}
+                className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-linear-to-br from-[#9333ea] to-[#7c3aed] hover:opacity-90 active:scale-95 transition-all disabled:opacity-60"
+              >
+                {stage === "downloading" ? "Downloading…" : "Download zip"}
               </button>
               <button
                 onClick={handleClear}
@@ -178,7 +288,6 @@ export default function StartExtracting(): JSX.Element {
           </div>
         )}
 
-      
       </div>
     </div>
   );
