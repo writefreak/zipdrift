@@ -26,12 +26,12 @@ export default function HowItWorks() {
       {/* Content */}
       <div className="relative z-10">
         {/* Badge */}
-        <span className="mb-6 inline-block font-nunito rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-widest text-white/60">
+        {/* <span className="mb-6 inline-block font-nunito rounded-full border border-white/20 px-4 py-1 text-xs uppercase tracking-widest text-white/60">
           How it works
-        </span>
+        </span> */}
 
         {/* Heading */}
-        <h2 className="mb-3 text-4xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
+        <h2 className=" text-3xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
           Extract images in just<br />3 simple steps.
         </h2>
 

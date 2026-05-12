@@ -1,3 +1,4 @@
+import Compatibility from '@/components/compatibility'
 import { FAQ } from '@/components/faq'
 import Hero from '@/components/hero'
 import HowItWorks from '@/components/how-it-works'
@@ -10,6 +11,7 @@ const page = () => {
       <Header/>
       <Hero />
       <HowItWorks />
+      <Compatibility/>
       <FAQ/>
     </div>
   )
