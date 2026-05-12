@@ -1,6 +1,9 @@
-import Link from "next/link";
+"use client"
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export default function CTA() {
+    const router = useRouter()
     return (
         <div className="relative bg-[#000000] py-6">
             <style>{`
@@ -50,18 +53,12 @@ export default function CTA() {
 
                 {/* CTAs */}
                 <div className="relative z-10 flex items-center gap-3">
-                    <Link
-                        href="#how-it-works"
-                        className="flex items-center gap-2 rounded-md border border-white/20 px-5 py-2.5 text-sm font-medium text-white/70 transition hover:border-white/40 hover:text-white"
-                    >
-                        Start Extracting
-                    </Link>
-                    <Link
-                        href="#extract"
-                        className="rounded-md bg-[#984cd6] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/85"
-                    >
-                        Use PDF Extract
-                    </Link>
+                     <Button onClick={()=>router.push("/extract")} className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-[#984cd6] font-medium hover:scale-105 hover:bg-[#984cd6] active:scale-95 transition-all duration-150 shadow-[0_0_16px_6px_#984cd6aa]">
+  Start extracting
+</Button>
+          <Button onClick={()=>router.push("/pdf-extract")} className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-transparent border border-white text-white font-medium hover:bg-black/90 hover:scale-105 active:scale-95 shadow-[0_0_20px_6px_rgba(255,255,255,0.15)] transition-all duration-150">
+  Use PDF Extract
+</Button>
                 </div>
             </div>
         </div>)

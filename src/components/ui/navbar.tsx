@@ -63,7 +63,7 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Button onClick={()=>router.push("/extract")} className="text-[15px] px-4 py-2 rounded-lg bg-[#984cd6] text-white font-medium hover:bg-white/90 active:scale-95 transition-all duration-150">
+            <Button onClick={()=>router.push("/extract")} className="hover:scale-105 hover:bg-[#984cd6] active:scale-95 transition-all duration-150 text-[15px] px-4 py-2 rounded-lg bg-[#984cd6] text-white font-medium">
               Start extracting
             </Button>
           </nav>
