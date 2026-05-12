@@ -28,7 +28,7 @@ export function FAQ() {
           </thead>
           <tbody>
             {faqs.map((faq, i) => (
-              <tr key={i} className="border-b border-white/10 align-top">
+              <tr key={i} className="border-b border-white/10 align-top bg-[#141414]">
                 <td className="p-5 text-white/60 italic leading-relaxed font-nunito">
                   "{faq.question}"
                 </td>

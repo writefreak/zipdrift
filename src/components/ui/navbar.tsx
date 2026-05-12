@@ -18,26 +18,6 @@ const ZipIcon = () => (
   </svg>
 );
 
-const MenuIcon = ({ open }: { open: boolean }) => (
-  <div className="relative w-5 h-4 flex flex-col justify-between">
-    <span
-      className={`block h-px bg-white/70 transition-all duration-300 origin-center ${
-        open ? "rotate-45 translate-y-1.75" : ""
-      }`}
-    />
-    <span
-      className={`block h-px bg-white/70 transition-all duration-300 ${
-        open ? "opacity-0 translate-x-2" : ""
-      }`}
-    />
-    <span
-      className={`block h-px bg-white/70 transition-all duration-300 origin-center ${
-        open ? "-rotate-45 -translate-y-2.25" : ""
-      }`}
-    />
-  </div>
-);
-
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,11 +29,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
@@ -61,13 +37,10 @@ export default function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "py-3  bg-[#0a0a0a]/90 backdrop-blur-xl"
-            : "py-5 bg-transparent"
+          scrolled ? "py-3 bg-[#0a0a0a]/90 backdrop-blur-xl" : "py-5 bg-transparent"
         }`}
       >
-        <div className=" mx-auto px-5 flex items-center justify-between md:px-14 p-4 md:p-0">
-          {/* Logo */}
+        <div className="mx-auto px-5 flex items-center justify-between md:px-14 p-4 md:p-0">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center text-white/80 group-hover:bg-white/15 group-hover:border-white/20 transition-all duration-200">
               <ZipIcon />
@@ -88,84 +61,69 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="hidden md:flex items-center gap-3">
-            <Button
-              
-              className="text-[15px] px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-white/90 active:scale-95 transition-all duration-150"
-            >
+            <Button className="text-[15px] px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-white/90 active:scale-95 transition-all duration-150">
               Start extracting
             </Button>
-          </div>
-
           </nav>
 
-         
-          
-          {/* Mobile menu toggle */}
-          <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors duration-150"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            <MenuIcon open={menuOpen} />
-          </button>
+          {/* Hamburger — only shows when menu is closed */}
+          {!menuOpen && (
+            <button
+              className="md:hidden flex flex-col gap-1.5 p-2"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <span className="block w-6 h-px bg-white" />
+              <span className="block w-6 h-px bg-white" />
+              <span className="block w-6 h-px bg-white" />
+            </button>
+          )}
         </div>
       </header>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile full-screen overlay */}
       <div
-        className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+        className={`md:hidden fixed inset-0 z-[60] bg-[#0a0a0a] flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        {/* Close button */}
+        <button
           onClick={() => setMenuOpen(false)}
-        />
-
-        {/* Drawer */}
-        <div
-          className={`absolute top-0 right-0 h-full w-64 bg-[#111111] border-l border-white/[0.07] flex flex-col transition-transform duration-300 ease-out ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className="absolute top-5 right-7 text-white/40 hover:text-white text-2xl transition-colors"
+          aria-label="Close menu"
         >
-          {/* Drawer header */}
-          <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07]">
-            <span className="text-white/50 text-xs uppercase tracking-widest font-medium">Menu</span>
-            <button
-              onClick={() => setMenuOpen(false)}
-              className="w-7 h-7 flex items-center justify-center text-white/40 hover:text-white/80 transition-colors"
-            >
-              ✕
-            </button>
-          </div>
+          ✕
+        </button>
 
-          {/* Drawer links */}
-          <nav className="flex flex-col px-5 py-6 gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-[15px] text-white/50 hover:text-white py-3 border-b border-white/[0.05] transition-colors duration-150"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+        {NAV_LINKS.map((link, i) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={() => setMenuOpen(false)}
+            className="text-2xl font-semibold text-white/60 hover:text-white transition-colors text-center"
+            style={{
+              opacity: menuOpen ? 1 : 0,
+              transform: menuOpen ? "translateX(0)" : "translateX(-24px)",
+              transition: `opacity 0.35s ease ${i * 0.07}s, transform 0.35s ease ${i * 0.07}s, color 0.2s`,
+            }}
+          >
+            {link.label}
+          </Link>
+        ))}
 
-          {/* Drawer CTA */}
-          <div className="px-5 mt-auto pb-8">
-            <a
-              href="#tool"
-              onClick={() => setMenuOpen(false)}
-              className="block w-full text-center text-[14px] px-4 py-3 rounded-lg bg-white text-black font-medium hover:bg-white/90 active:scale-95 transition-all duration-150"
-            >
-              Start extracting
-            </a>
-          </div>
-        </div>
+        <a
+          href="#tool"
+          onClick={() => setMenuOpen(false)}
+          className="text-base font-medium bg-white text-black px-8 py-3 rounded-lg text-center"
+          style={{
+            opacity: menuOpen ? 1 : 0,
+            transform: menuOpen ? "translateX(0)" : "translateX(-24px)",
+            transition: `opacity 0.35s ease ${NAV_LINKS.length * 0.07}s, transform 0.35s ease ${NAV_LINKS.length * 0.07}s`,
+          }}
+        >
+          Start extracting
+        </a>
       </div>
     </>
   );
