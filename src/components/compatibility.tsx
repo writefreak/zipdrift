@@ -54,7 +54,7 @@ const sources = [
 
 export default function Compatibility() {
   return (
-    <section className="relative overflow-hidden bg-[#0a0a0a] p-4 md:px-14 py-20">
+    <section className="relative overflow-hidden bg-[#000000] p-4 md:px-14 py-20">
       {/* Diagonal line texture */}
      
 
@@ -74,25 +74,31 @@ export default function Compatibility() {
         {/* Cards */}
        {/* Cards */}
 <div className="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-x-visible scrollbar-none -mx-4 px-4 md:mx-0 md:px-0">
-  {sources.map((s) => (
-    <div
-      key={s.title}
-      className="rounded-2xl border border-white/9 bg-white/4 p-7 transition duration-200 hover:border-white/17 hover:bg-white/[0.07] min-w-[75vw] md:min-w-0"
-    >
-              {/* Icon */}
-              <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${s.iconBg} ${s.iconColor}`}>
-                {s.icon}
-              </div>
+ {sources.map((s) => (
+  <div
+    key={s.title}
+    className="rounded-2xl p-7 transition duration-200 hover:bg-white/[0.07] min-w-[75vw] md:min-w-0"
+    style={{
+      background: "#0f0a14",
+      border: "1px solid transparent",
+      backgroundImage:
+        "linear-gradient(#0f0a14, #0f0a14), linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, #984cd6 100%)",
+      backgroundOrigin: "border-box",
+      backgroundClip: "padding-box, border-box",
+    }}
+  >
+    {/* Icon */}
+    <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${s.iconBg} ${s.iconColor}`}>
+      {s.icon}
+    </div>
 
-              {/* Title */}
-              <h3 className="mb-2 font-bold font-nunito text-white text-[17px]">{s.title}</h3>
+    {/* Title */}
+    <h3 className="mb-2 font-bold font-nunito text-white text-[17px]">{s.title}</h3>
 
-              {/* Description */}
-              <p className="mb-5 md:text-sm text-xs font-inter leading-relaxed text-white/42">{s.desc}</p>
-
-              
-            </div>
-          ))}
+    {/* Description */}
+    <p className="mb-5 md:text-sm text-xs font-inter leading-relaxed text-white/42">{s.desc}</p>
+  </div>
+))}
         </div>
       </div>
     </section>

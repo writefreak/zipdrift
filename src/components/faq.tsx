@@ -5,47 +5,66 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="bg-[#0a0a0a] px-5 md:px-14 pb-16  md:pb-20 py-10 flex flex-col">
+    <div className="bg-[#000000] px-5 md:px-14 pb-16  md:pb-20 py-10 flex flex-col">
       <h2 className="mb-10 text-4xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
         Frequently Asked Questions
       </h2>
 
-      {/* Desktop table */}
-      <div className="hidden md:block rounded-xl overflow-hidden border border-white/10">
-        <table className="w-full border-collapse text-sm">
-          <thead className="font-nunito">
-            <tr className="border-b border-white/10">
-              <th className="text-left p-5 text-[11px] font-bold uppercase tracking-widest text-white/40 w-1/3">
-                The Question
-              </th>
-              <th className="text-left p-5 text-[11px] font-bold uppercase tracking-widest text-white/40 w-1/3 border-l border-white/10">
-                The Short Answer
-              </th>
-              <th className="text-left p-5 text-[11px] font-bold uppercase tracking-widest text-white w-1/3 border-l border-white/10">
-                The Full Picture
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {faqs.map((faq, i) => (
-              <tr key={i} className="border-b border-white/10 align-top bg-[#141414]">
-                <td className="p-5 text-white/60 italic leading-relaxed font-nunito">
-                  "{faq.question}"
-                </td>
-                <td className="p-5 font-inter text-white leading-relaxed border-l border-white/10">
-                  {faq.short}
-                </td>
-                <td className="p-5 font-inter text-white leading-relaxed border-l border-white/10">
-                  {faq.full}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    {/* Desktop table */}
+{/* Desktop table */}
+<div
+  className="hidden md:block rounded-xl overflow-hidden"
+  style={{
+    border: "1px solid transparent",
+    backgroundImage:
+      "linear-gradient(#0d0a12, #0d0a12), linear-gradient(to top, #984cd6 0%, rgba(255,255,255,0.08) 100%)",
+    backgroundOrigin: "border-box",
+    backgroundClip: "padding-box, border-box",
+  }}
+>
+  <table className="w-full border-collapse text-sm">
+    <thead className="font-nunito">
+      <tr  className="border-b border-white/10 align-top bg-[#0d0a12]">
+        <th className="text-left p-5 text-[11px] font-bold uppercase tracking-widest text-white/40 w-1/3">
+          The Question
+        </th>
+        <th className="text-left p-5 text-[11px] font-bold uppercase tracking-widest text-white/40 w-1/3 border-l border-white/10">
+          The Short Answer
+        </th>
+        <th className="text-left p-5 text-[11px] font-bold uppercase tracking-widest text-white w-1/3 border-l border-white/10">
+          The Full Picture
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {faqs.map((faq, i) => (
+        <tr key={i}  className="border-b border-white/10 align-top bg-[#0d0a12]">
+          <td className="p-5 text-white/60 italic leading-relaxed font-nunito">
+            "{faq.question}"
+          </td>
+          <td className="p-5 font-inter text-white leading-relaxed border-l border-white/10">
+            {faq.short}
+          </td>
+          <td className="p-5 font-inter text-white leading-relaxed border-l border-white/10">
+            {faq.full}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
-      {/* Mobile accordion */}
-      <div className="flex md:hidden flex-col border border-white/10 rounded-xl overflow-hidden divide-y divide-white/10">
+{/* Mobile accordion */}
+<div
+  className="flex md:hidden flex-col rounded-xl overflow-hidden divide-y divide-white/10"
+  style={{
+    border: "1px solid transparent",
+    backgroundImage:
+      "linear-gradient(#0a0a0a, #0a0a0a), linear-gradient(to top, #984cd6 0%, rgba(255,255,255,0.08) 100%)",
+    backgroundOrigin: "border-box",
+    backgroundClip: "padding-box, border-box",
+  }}
+>
         {faqs.map((faq, i) => (
           <div key={i}>
             <button

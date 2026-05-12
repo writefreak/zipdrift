@@ -44,9 +44,7 @@ export default function Header() {
       >
         <div className="mx-auto px-5 flex items-center justify-between md:px-14 p-4 md:p-0">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center text-white/80 group-hover:bg-white/15 group-hover:border-white/20 transition-all duration-200">
-              <ZipIcon />
-            </div>
+            
             <span className="text-white font-semibold tracking-tight text-2xl">
               Zipdrift
             </span>
@@ -85,10 +83,10 @@ export default function Header() {
 
       {/* Mobile full-screen overlay */}
       <div
-        className={`md:hidden fixed inset-0 z-[60] bg-[#0a0a0a] flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
-          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
-      >
+  className={`md:hidden fixed inset-0 z-60 bg-black/40 backdrop-blur-2xl flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
+    menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+  }`}
+>
         {/* Close button */}
         <button
           onClick={() => setMenuOpen(false)}
