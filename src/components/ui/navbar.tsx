@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "./button";
+import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { label: "Home", href: "#" },
@@ -21,6 +22,7 @@ const ZipIcon = () => (
 );
 
 export default function Header() {
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -61,7 +63,7 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Button className="text-[15px] px-4 py-2 rounded-lg bg-[#984cd6] text-white font-medium hover:bg-white/90 active:scale-95 transition-all duration-150">
+            <Button onClick={()=>router.push("/extract")} className="text-[15px] px-4 py-2 rounded-lg bg-[#984cd6] text-white font-medium hover:bg-white/90 active:scale-95 transition-all duration-150">
               Start extracting
             </Button>
           </nav>

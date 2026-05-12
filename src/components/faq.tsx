@@ -90,17 +90,13 @@ export function FAQ() {
             >
               <div className="px-5 pb-5 flex flex-col gap-4">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-white/40 mb-1">
-                    The Short Answer
-                  </p>
+                  
                   <p className="font-inter text-white text-sm leading-relaxed">
                     {faq.short}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-white mb-1">
-                    The Full Picture
-                  </p>
+                 
                   <p className="font-inter text-white text-sm leading-relaxed">
                     {faq.full}
                   </p>

@@ -36,8 +36,10 @@
 import React from "react";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export default function BackgroundBeamsDemo() {
+  const router = useRouter()
   return (
     <div
       className="h-150 md:h-screen w-full relative flex flex-col items-center justify-center antialiased"
@@ -55,10 +57,10 @@ export default function BackgroundBeamsDemo() {
           Paste a list of URLs from any platform or upload a pdf <br className="md:hidden" />and Zipdrift extracts every image behind them, packages <br className="md:hidden" />everything cleanly and hands it back as a single zip file.
         </p>
         <div className="flex gap-2 z-30 items-center justify-center md:pt-7 pt-5">
-          <Button className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-[#984cd6] font-medium hover:scale-105 hover:bg-[#984cd6] active:scale-95 transition-all duration-150 shadow-[0_0_16px_6px_#984cd6aa]">
+          <Button onClick={()=>router.push("/extract")} className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-[#984cd6] font-medium hover:scale-105 hover:bg-[#984cd6] active:scale-95 transition-all duration-150 shadow-[0_0_16px_6px_#984cd6aa]">
   Start extracting
 </Button>
-          <Button className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-transparent border border-white text-white font-medium hover:bg-black/90 hover:scale-105 active:scale-95 shadow-[0_0_20px_6px_rgba(255,255,255,0.15)] transition-all duration-150">
+          <Button onClick={()=>router.push("/pdf-extract")} className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-transparent border border-white text-white font-medium hover:bg-black/90 hover:scale-105 active:scale-95 shadow-[0_0_20px_6px_rgba(255,255,255,0.15)] transition-all duration-150">
   Use PDF Extract
 </Button>
         </div>

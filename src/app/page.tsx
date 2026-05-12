@@ -1,4 +1,5 @@
 import Compatibility from '@/components/compatibility'
+import CTA from '@/components/CTA'
 import { FAQ } from '@/components/faq'
 import Footer from '@/components/footer'
 import Hero from '@/components/hero'
@@ -9,12 +10,12 @@ import React from 'react'
 const page = () => {
   return (
     <div className=''>
-      <Header/>
+     
       <Hero />
       <HowItWorks />
       <Compatibility/>
       <FAQ />
-      <Footer/>
+      <CTA/>
     </div>
   )
 }
