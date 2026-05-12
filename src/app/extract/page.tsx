@@ -180,11 +180,11 @@ export default function StartExtracting(): JSX.Element {
   const submitted = stage === "ready" || stage === "downloading";
 
   return (
-    <div className="relative min-h-screen bg-black text-white font-nunito antialiased overflow-hidden">
+    <div className="relative min-h-screen bg-black text-white font-nunito antialiased overflow-hidden flex flex-col md:block">
 
       <div className="absolute inset-x-0 top-0 h-105 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,#6b21c8_0%,#3b0764_35%,#0d0014_65%,transparent_100%)]" />
 
-      <div className="relative z-10 max-w-3xl mx-auto px-6 md:pt-24">
+      <div className="relative z-10 max-w-3xl mx-auto px-6 pt-16 md:pt-24 flex-1 flex flex-col justify-center md:block md:flex-none">
 
         {/* Heading */}
         <div className="text-center mb-12">
@@ -226,7 +226,7 @@ export default function StartExtracting(): JSX.Element {
                 "https://cdn.dribbble.com/users/123/screenshots/...",
                 "https://drive.google.com/file/d/ABC123/view",
               ].join("\n")}
-              className="w-full bg-transparent px-5 py-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none leading-relaxed font-mono"
+              className="w-full text-xs bg-transparent px-5 py-4 md:text-sm text-gray-200 placeholder-gray-600 resize-none outline-none leading-relaxed font-inter"
             />
             <p className="px-5 pb-3 text-xs text-white/80">
               Tip: right-click an image and choose <span className="text-gray-400">Copy image address</span> for best results.
