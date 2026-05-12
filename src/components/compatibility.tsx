@@ -54,7 +54,7 @@ const sources = [
 
 export default function Compatibility() {
   return (
-    <section className="relative overflow-hidden bg-[#0a0a0a] p-4 md:px-14 py-10 md:py-14">
+    <section className="relative overflow-hidden bg-[#0a0a0a] p-4 md:px-14 py-20">
       {/* Diagonal line texture */}
      
 
@@ -62,23 +62,23 @@ export default function Compatibility() {
         
 
         {/* Heading */}
-        <h2 className="mb-3 text-3xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
+        <h2 className="mb-6 text-3xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
           Works with your links,<br />whatever the source.
         </h2>
 
-        {/* Subheading */}
+        {/* Subheading
         <p className="mb-14 font-inter max-w-md text-sm leading-relaxed text-white/40">
-          ZipDrift detects the source type of every URL before extraction starts,
-          so you always know what you're working with.
-        </p>
+          ZipDrift detects the source type of every URL before extraction starts. You always know what you're working with.
+        </p> */}
 
         {/* Cards */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {sources.map((s) => (
-            <div
-              key={s.title}
-              className="rounded-2xl border border-white/9 bg-white/4 p-7 transition duration-200 hover:border-white/[0.17] hover:bg-white/[0.07]"
-            >
+       {/* Cards */}
+<div className="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-x-visible scrollbar-none -mx-4 px-4 md:mx-0 md:px-0">
+  {sources.map((s) => (
+    <div
+      key={s.title}
+      className="rounded-2xl border border-white/9 bg-white/4 p-7 transition duration-200 hover:border-white/17 hover:bg-white/[0.07] min-w-[75vw] md:min-w-0"
+    >
               {/* Icon */}
               <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${s.iconBg} ${s.iconColor}`}>
                 {s.icon}

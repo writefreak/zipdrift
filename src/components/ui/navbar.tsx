@@ -4,7 +4,9 @@ import Link from "next/link";
 import { Button } from "./button";
 
 const NAV_LINKS = [
+  { label: "Home", href: "#" },
   { label: "How it works", href: "#how-it-works" },
+  { label: "Compatibility", href: "#compatibility" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -56,12 +58,12 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[15px] text-white/70 hover:text-white transition-colors duration-200 tracking-wide"
+                className="text-[15px] font-nunito text-white/70 hover:text-white transition-colors duration-200 tracking-wide"
               >
                 {link.label}
               </Link>
             ))}
-            <Button className="text-[15px] px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-white/90 active:scale-95 transition-all duration-150">
+            <Button className="text-[15px] px-4 py-2 rounded-lg bg-[#984cd6] text-white font-medium hover:bg-white/90 active:scale-95 transition-all duration-150">
               Start extracting
             </Button>
           </nav>
@@ -101,7 +103,7 @@ export default function Header() {
             key={link.href}
             href={link.href}
             onClick={() => setMenuOpen(false)}
-            className="text-2xl font-semibold text-white/60 hover:text-white transition-colors text-center"
+            className="text-2xl font-nunito font-semibold text-white/60 hover:text-white transition-colors text-center"
             style={{
               opacity: menuOpen ? 1 : 0,
               transform: menuOpen ? "translateX(0)" : "translateX(-24px)",
@@ -115,7 +117,7 @@ export default function Header() {
         <a
           href="#tool"
           onClick={() => setMenuOpen(false)}
-          className="text-base font-medium bg-white text-black px-8 py-3 rounded-lg text-center"
+          className="text-base font-medium bg-[#984cd6] text-white px-8 py-3 rounded-lg text-center"
           style={{
             opacity: menuOpen ? 1 : 0,
             transform: menuOpen ? "translateX(0)" : "translateX(-24px)",

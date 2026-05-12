@@ -1,5 +1,6 @@
 import Compatibility from '@/components/compatibility'
 import { FAQ } from '@/components/faq'
+import Footer from '@/components/footer'
 import Hero from '@/components/hero'
 import HowItWorks from '@/components/how-it-works'
 import Header from '@/components/ui/navbar'
@@ -12,7 +13,8 @@ const page = () => {
       <Hero />
       <HowItWorks />
       <Compatibility/>
-      <FAQ/>
+      <FAQ />
+      <Footer/>
     </div>
   )
 }

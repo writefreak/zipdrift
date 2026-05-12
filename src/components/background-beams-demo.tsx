@@ -15,7 +15,7 @@ export default function BackgroundBeamsDemo() {
         </p>
         <div className="flex gap-2 z-30 items-center justify-center md:pt-7 pt-5">
           <Button
-              className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-white/90 active:scale-95 transition-all duration-150"
+              className="text-[15px] font-nunito px-4 py-2 rounded-lg bg-[#984cd6]  font-medium hover:bg-white/90 active:scale-95 transition-all duration-150"
             >
               Start extracting
             </Button>

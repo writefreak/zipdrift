@@ -5,7 +5,7 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="bg-[#0a0a0a] px-5 md:px-14 py-20 flex flex-col">
+    <div className="bg-[#0a0a0a] px-5 md:px-14 pb-16  md:pb-20 py-10 flex flex-col">
       <h2 className="mb-10 text-4xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
         Frequently Asked Questions
       </h2>
