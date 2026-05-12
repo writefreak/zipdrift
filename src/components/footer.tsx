@@ -8,7 +8,7 @@ export default function Footer() {
 
 
         {/* Headline */}
-        <h2 className="relative z-10 mb-3 font-nunito text-2xl md:text-4xl font-extrabold tracking-tight text-white">
+        <h2 className="relative z-10 mb-3 font-nunito text-xl md:text-4xl font-extrabold tracking-tight text-white">
           Batch download images in seconds.
         </h2>
 
