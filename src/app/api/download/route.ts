@@ -12,41 +12,47 @@ async function fetchImagesWithBrowser(
   });
 
   const results: ({ filename: string; buffer: ArrayBuffer } | null)[] = new Array(images.length).fill(null);
+  const CONCURRENCY = 5;
 
   try {
-    const page = await browser.newPage();
-    await page.goto("https://www.smugmug.com", { waitUntil: "domcontentloaded", timeout: 15000 });
+    // Process in parallel batches
+    for (let batch = 0; batch < images.length; batch += CONCURRENCY) {
+      const slice = images.slice(batch, batch + CONCURRENCY);
 
-    for (let i = 0; i < images.length; i++) {
-      const img = images[i];
-      try {
-        const response = await page.goto(img.directUrl, { waitUntil: "networkidle0", timeout: 15000 });
+      await Promise.all(
+        slice.map(async (img, sliceIndex) => {
+          const i = batch + sliceIndex;
+          const page = await browser.newPage();
+          try {
+            const response = await page.goto(img.directUrl, { waitUntil: "networkidle0", timeout: 15000 });
 
-        if (!response || !response.ok()) {
-          console.warn(`[download] Puppeteer: ${img.directUrl} → ${response?.status()}`);
-          continue;
-        }
+            if (!response || !response.ok()) {
+              console.warn(`[download] ${img.directUrl} → ${response?.status()}`);
+              return;
+            }
 
-        const contentType = response.headers()["content-type"] ?? "";
-        if (!contentType.startsWith("image/")) {
-          console.warn(`[download] Not an image: ${contentType}`);
-          continue;
-        }
+            const contentType = response.headers()["content-type"] ?? "";
+            if (!contentType.startsWith("image/")) {
+              console.warn(`[download] Not an image: ${contentType}`);
+              return;
+            }
 
-        const nodeBuffer = await response.buffer();
-        const arrayBuffer = nodeBuffer.buffer.slice(
-          nodeBuffer.byteOffset,
-          nodeBuffer.byteOffset + nodeBuffer.byteLength
-        ) as ArrayBuffer;
+            const nodeBuffer = await response.buffer();
+            const arrayBuffer = nodeBuffer.buffer.slice(
+              nodeBuffer.byteOffset,
+              nodeBuffer.byteOffset + nodeBuffer.byteLength
+            ) as ArrayBuffer;
 
-        const ext = contentType.split("/")[1]?.split(";")[0] ?? "jpg";
-        const filename = `img${i + 1}.${ext}`;
-
-        results[i] = { filename, buffer: arrayBuffer };
-        console.log(`[download] ✓ ${filename}`);
-      } catch (err) {
-        console.warn(`[download] Failed: ${img.directUrl}`, err);
-      }
+            const ext = contentType.split("/")[1]?.split(";")[0] ?? "jpg";
+            results[i] = { filename: `img${i + 1}.${ext}`, buffer: arrayBuffer };
+            console.log(`[download] ✓ img${i + 1}.${ext}`);
+          } catch (err) {
+            console.warn(`[download] Failed: ${img.directUrl}`, err);
+          } finally {
+            await page.close();
+          }
+        })
+      );
     }
   } finally {
     await browser.close();

@@ -68,38 +68,52 @@ export default function StartExtracting(): JSX.Element {
       .map((l) => l.trim())
       .filter(Boolean);
 
-    console.log("[ZipDrift] Submitting URLs:", rawUrls);
     setStage("extracting");
     setErrorMsg("");
 
     try {
+      const isGoogleDocUrl = (u: string) => /docs\.google\.com\/document/i.test(u);
+      let resolvedRawUrls = rawUrls;
+
+      if (rawUrls.length === 1 && isGoogleDocUrl(rawUrls[0])) {
+        const docRes = await fetch("/api/fetch-doc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: rawUrls[0] }),
+        });
+
+        const docData = await docRes.json();
+
+        if (!docRes.ok) {
+          throw new Error(docData.error ?? "Failed to fetch Google Doc");
+        }
+
+        resolvedRawUrls = docData.urls ?? [];
+
+        if (resolvedRawUrls.length === 0) {
+          throw new Error("No image links found in this Google Doc. Make sure the document is public.");
+        }
+      }
+
       const res = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ urls: rawUrls }),
+        body: JSON.stringify({ urls: resolvedRawUrls }),
       });
 
-      console.log("[ZipDrift] /api/extract response status:", res.status);
-      console.log("[ZipDrift] /api/extract content-type:", res.headers.get("content-type"));
-
       const rawText = await res.text();
-      console.log("[ZipDrift] /api/extract raw response:", rawText);
-
       let data: { resolved?: ResolvedImage[]; error?: string };
       try {
         data = JSON.parse(rawText);
-      } catch (parseErr) {
-        console.error("[ZipDrift] Failed to parse /api/extract response as JSON:", parseErr);
+      } catch {
         throw new Error("Something went wrong on our end. Please try again.");
       }
 
       if (!res.ok) {
-        console.error("[ZipDrift] /api/extract error payload:", data);
         throw new Error("Something went wrong while extracting. Please try again.");
       }
 
       const resolved: ResolvedImage[] = data.resolved ?? [];
-      console.log("[ZipDrift] Resolved images:", resolved);
 
       if (resolved.length === 0) {
         throw new Error("We couldn't find any images at those URLs. Make sure they're public.");
@@ -119,17 +133,12 @@ export default function StartExtracting(): JSX.Element {
     if (resolvedImages.length === 0) return;
     setStage("downloading");
 
-    console.log("[ZipDrift] Starting download with images:", resolvedImages);
-
     try {
       const res = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ images: resolvedImages }),
       });
-
-      console.log("[ZipDrift] /api/download response status:", res.status);
-      console.log("[ZipDrift] /api/download content-type:", res.headers.get("content-type"));
 
       if (!res.ok) {
         const rawText = await res.text();
@@ -138,12 +147,9 @@ export default function StartExtracting(): JSX.Element {
       }
 
       const succeeded = Number(res.headers.get("X-Success-Count") ?? resolvedImages.length);
-      console.log("[ZipDrift] Succeeded image count:", succeeded);
       setSuccessCount(succeeded);
 
       const blob = await res.blob();
-      console.log("[ZipDrift] Zip blob size:", blob.size, "bytes");
-
       const blobUrl = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = blobUrl;
@@ -216,16 +222,16 @@ export default function StartExtracting(): JSX.Element {
               onPaste={handlePaste}
               rows={4}
               placeholder={[
-  "https://images.unsplash.com/photo-abc123...",
-  "https://cdn.dribbble.com/users/123/screenshots/...",
-  "https://drive.google.com/file/d/ABC123/view",
-].join("\n")}
+                "https://images.unsplash.com/photo-abc123...",
+                "https://cdn.dribbble.com/users/123/screenshots/...",
+                "https://drive.google.com/file/d/ABC123/view",
+              ].join("\n")}
               className="w-full bg-transparent px-5 py-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none leading-relaxed font-mono"
             />
-<p className="px-5 pb-3 text-xs text-white/80">
-  Tip: right-click an image and choose <span className="text-gray-400">Copy image address</span> for best results.
-</p>
-            {/* Bottom bar */}
+            <p className="px-5 pb-3 text-xs text-white/80">
+              Tip: right-click an image and choose <span className="text-gray-400">Copy image address</span> for best results.
+            </p>
+
             <div className="flex items-center justify-between px-5 py-4 border-t border-white/5 bg-black/20">
               <button
                 onClick={handleClear}
@@ -259,7 +265,6 @@ export default function StartExtracting(): JSX.Element {
             </div>
           </div>
         ) : (
-          /* SUCCESS */
           <div className="rounded-2xl border border-purple-500/30 bg-purple-500/6 p-10 text-center">
             <div className="w-16 h-16 rounded-full bg-purple-500/15 flex items-center justify-center mx-auto mb-5">
               <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#c084fc" strokeWidth={2}>
@@ -274,13 +279,13 @@ export default function StartExtracting(): JSX.Element {
               <button
                 onClick={handleDownload}
                 disabled={stage === "downloading"}
-                className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-linear-to-br from-[#9333ea] to-[#7c3aed] hover:opacity-90 active:scale-95 transition-all disabled:opacity-60"
+                className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-[#984cd6] hover:scale-105 active:scale-95 transition-all duration-150 shadow-[0_0_16px_6px_#984cd6aa] disabled:opacity-60 disabled:scale-100 disabled:shadow-none"
               >
                 {stage === "downloading" ? "Downloading…" : "Download zip"}
               </button>
               <button
                 onClick={handleClear}
-                className="px-6 py-2.5 rounded-full text-sm font-semibold border border-white/10 text-gray-300 hover:border-white/20 transition-all"
+                className="px-6 py-2.5 rounded-lg text-sm font-semibold border border-white/10 text-gray-300 hover:border-white/20 transition-all"
               >
                 Extract more
               </button>

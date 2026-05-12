@@ -24,10 +24,38 @@ async function extractTextFromDocx(buffer: ArrayBuffer): Promise<string> {
 // }
 
 async function extractTextFromPdf(buffer: ArrayBuffer): Promise<string> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string }>;
-  const data = await pdfParse(Buffer.from(buffer));
-  return data.text;
+  const { extractText } = await import("unpdf");
+  const { text } = await extractText(new Uint8Array(buffer), { mergePages: true });
+
+  // unpdf splits long URLs across lines at hyphens and spaces.
+  // Collapse all whitespace into single spaces first, then
+  // aggressively rejoin any token that looks like a URL fragment
+  // following an existing URL start.
+  const lines = text.split(/\s+/).filter(Boolean);
+  const rejoined: string[] = [];
+  let current = "";
+
+  for (const token of lines) {
+    if (!current) {
+      current = token;
+    } else if (current.startsWith("http") && !token.startsWith("http")) {
+      // Keep appending tokens to the current URL as long as they
+      // look like URL path segments (no spaces, valid URL chars)
+      if (/^[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/.test(token)) {
+        current += token;
+      } else {
+        rejoined.push(current);
+        current = token;
+      }
+    } else {
+      rejoined.push(current);
+      current = token;
+    }
+  }
+
+  if (current) rejoined.push(current);
+
+  return rejoined.join(" ");
 }
 export async function POST(req: NextRequest) {
   try {
