@@ -187,7 +187,7 @@ export default function StartExtracting(): JSX.Element {
       <div className="relative z-10 max-w-3xl mx-auto px-6 pt-16 md:pt-24 flex-1 flex flex-col justify-center md:block md:flex-none">
 
         {/* Heading */}
-        <div className="text-center mb-12">
+        <div data-aos="fade-up" className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4">
             Paste your URLs.
             <br />
@@ -204,7 +204,7 @@ export default function StartExtracting(): JSX.Element {
 
         {/* INPUT CARD */}
         {!submitted ? (
-          <div
+          <div data-aos="fade-up"
             className={[
               "rounded-2xl border overflow-hidden transition-all duration-300 bg-white/3",
               isDragging

@@ -1,15 +1,13 @@
-
-
 const sources = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2L2 19.5h7.5L12 15l2.5 4.5H22L12 2z" />
-        <path d="M2 19.5h20" />
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
       </svg>
     ),
-    iconBg: "bg-blue-500/15",
-    iconColor: "text-blue-400",
+    iconBg: "bg-white/[0.08]",
+    iconColor: "text-white/50",
     title: "Google Drive Links",
     desc: "Paste any Drive share link and ZipDrift builds a direct download URL from the file ID. Make sure the file is set to `anyone with the link` to avoid access errors.",
     pillBg: "bg-blue-500/15",
@@ -35,14 +33,16 @@ const sources = [
     pillLabel: "Auto-detected",
   },
   {
+
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        <path d="M12 2L2 19.5h7.5L12 15l2.5 4.5H22L12 2z" />
+        <path d="M2 19.5h20" />
       </svg>
     ),
-    iconBg: "bg-white/[0.08]",
-    iconColor: "text-white/50",
+    iconBg: "bg-blue-500/15",
+    iconColor: "text-blue-400",
+    
     title: "Unknown sources",
     desc: "Direct image URLs and unrecognised sources are flagged with an unknown badge before you run the batch, so you can review or remove them first.",
     pillBg: "bg-white/[0.07]",
@@ -55,50 +55,42 @@ const sources = [
 export default function Compatibility() {
   return (
     <section className="relative overflow-hidden bg-[#000000] p-4 md:px-14 py-20">
-      {/* Diagonal line texture */}
-     
+      <style>{`
+        .source-card {
+          transform: scale(1);
+          transition: transform 0.3s ease;
+        }
+        .source-card:hover {
+          transform: scale(0.95);
+        }
+      `}</style>
 
-      <div className="relative z-10">
-        
-
-        {/* Heading */}
+      <div data-aos="fade-up" className="relative z-10">
         <h2 className="mb-6 text-3xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
           Works with your links,<br />whatever the source.
         </h2>
 
-        {/* Subheading
-        <p className="mb-14 font-inter max-w-md text-sm leading-relaxed text-white/40">
-          ZipDrift detects the source type of every URL before extraction starts. You always know what you're working with.
-        </p> */}
-
-        {/* Cards */}
-       {/* Cards */}
-<div className="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-x-visible scrollbar-none -mx-4 px-4 md:mx-0 md:px-0">
- {sources.map((s) => (
-  <div
-    key={s.title}
-    className="rounded-2xl p-7 transition duration-200 hover:bg-white/[0.07] min-w-[75vw] md:min-w-0"
-    style={{
-      background: "#0f0a14",
-      border: "1px solid transparent",
-      backgroundImage:
-        "linear-gradient(#0f0a14, #0f0a14), linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, #984cd6 100%)",
-      backgroundOrigin: "border-box",
-      backgroundClip: "padding-box, border-box",
-    }}
-  >
-    {/* Icon */}
-    <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${s.iconBg} ${s.iconColor}`}>
-      {s.icon}
-    </div>
-
-    {/* Title */}
-    <h3 className="mb-2 font-bold font-nunito text-white text-[17px]">{s.title}</h3>
-
-    {/* Description */}
-    <p className="mb-5 md:text-sm text-xs font-inter leading-relaxed text-white/42">{s.desc}</p>
-  </div>
-))}
+        <div data-aos="fade-up" className="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-x-visible scrollbar-none -mx-4 px-4 md:mx-0 md:px-0">
+          {sources.map((s) => (
+            <div
+              key={s.title}
+              className="source-card rounded-2xl p-7 min-w-[75vw] md:min-w-0"
+              style={{
+                background: "#0f0a14",
+                border: "1px solid transparent",
+                backgroundImage:
+                  "linear-gradient(#0f0a14, #0f0a14), linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, #984cd6 100%)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+              }}
+            >
+              <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${s.iconBg} ${s.iconColor}`}>
+                {s.icon}
+              </div>
+              <h3 className="mb-2 font-bold font-nunito text-white text-[17px]">{s.title}</h3>
+              <p className="mb-5 md:text-sm text-xs font-inter leading-relaxed text-white/42">{s.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

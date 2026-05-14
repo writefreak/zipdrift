@@ -226,7 +226,7 @@ export default function PDFExtract(): JSX.Element {
       <div className="relative z-10 max-w-3xl mx-auto px-6 pt-24 pb-32">
 
         {/* Heading */}
-        <div className="text-center mb-12">
+        <div data-aos="fade-up" className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4">
             Upload your file.
             <br />
@@ -247,6 +247,7 @@ export default function PDFExtract(): JSX.Element {
         {/* ── STAGE: UPLOAD ── */}
         {(stage === "upload" || stage === "error") && (
           <div
+            data-aos="fade-up"
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}

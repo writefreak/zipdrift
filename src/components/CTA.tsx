@@ -40,7 +40,7 @@ export default function CTA() {
       `}</style>
 
             {/* CTA Card */}
-            <div className="cta-glow relative overflow-hidden rounded-2xl mx-6 md:mx-14 px-8 py-14 flex flex-col items-center text-center">
+            <div data-aos="fade-up" className="cta-glow relative overflow-hidden rounded-2xl mx-6 md:mx-14 px-8 py-14 flex flex-col items-center text-center">
                 {/* Headline */}
                 <h2 className="relative z-10 mb-3 font-nunito text-xl md:text-4xl font-extrabold tracking-tight text-white">
                     Batch download images in seconds.

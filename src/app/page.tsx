@@ -1,3 +1,4 @@
+import AOSInit from '@/components/aosinit'
 import Compatibility from '@/components/compatibility'
 import CTA from '@/components/CTA'
 import { FAQ } from '@/components/faq'
@@ -10,7 +11,7 @@ import React from 'react'
 const page = () => {
   return (
     <div className=''>
-     
+     <AOSInit/>
       <Hero />
       <HowItWorks />
       <Compatibility/>

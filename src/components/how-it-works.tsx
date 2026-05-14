@@ -24,24 +24,24 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section className="relative overflow-hidden bg-[#000000] md:px-14 p-4 md:py-14">
-      <div className="relative z-10">
+      <div data-aos="fade-up" className="relative z-10">
         <h2 className="text-3xl font-nunito font-extrabold leading-tight tracking-tight text-white md:text-5xl">
           Extract images in just<br />3 simple steps.
         </h2>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pt-5">
+        <div data-aos="fade-up" className="grid grid-cols-1 gap-4 md:grid-cols-3 pt-5">
           {steps.map((step) => (
             <div
               key={step.number}
-              className="rounded-2xl p-8 transition duration-200 hover:bg-white/[0.04]"
+              className="rounded-2xl p-8 transition-transform duration-300 ease-in-out hover:scale-95 hover:bg-white/4"
               style={{
-  background: "#0f0a14",
-  border: "1px solid transparent",
-  backgroundImage:
-    "linear-gradient(#0f0a14, #0f0a14), linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, #984cd6 100%)",
-  backgroundOrigin: "border-box",
-  backgroundClip: "padding-box, border-box",
-}}
+                background: "#0f0a14",
+                border: "1px solid transparent",
+                backgroundImage:
+                  "linear-gradient(#0f0a14, #0f0a14), linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, #984cd6 100%)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+              }}
             >
               <p className="mb-8 text-6xl font-extrabold leading-none tracking-tighter text-white/8">
                 {step.number}
